@@ -1,0 +1,6 @@
+type Message @model {
+  id: ID!
+  message: String!
+  user: String!
+  createdAt: String
+}
