@@ -25,7 +25,7 @@ import Avatar from '@material-ui/core/Avatar';
 
 import VideoPreCall from './components/VideoPreCall';
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -101,7 +101,8 @@ function App() {
     setMessages(sortedMessages);
   };
 
-  const createMessage = async () => {
+  const createMessage = async e => {
+    if (e) e.preventDefault();
     if (!currentMessage) return;
     await DataStore.save(new Message({ message: currentMessage, user: currentUser }));
     setCurrentMessage('');
@@ -117,48 +118,34 @@ function App() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant='permanent'
-        classes={{
-          paper: classes.drawerPaper
-        }}>
-        <div className={classes.toolbar} />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Grid container spacing={3}>
           <Grid item xs={8}>
             <VideoPreCall />
           </Grid>
-          <Grid item xs={4}>
-            <Paper className={classes.paper}>
-              <h1>Real Time Message App</h1>
-              <form onSubmit={e => e.preventDefault()} noValidate autoComplete='off'>
-                <TextField id='username' label='Username' variant='outlined' onChange={onUserChange} value={currentUser} />
-                <TextField id='message' label='Message' variant='outlined' onChange={onMessageChange} value={currentMessage} />
-                <Button variant='contained' color='primary' onClick={createMessage}>
-                  Create Message
-                </Button>
-              </form>
-            </Paper>
+        </Grid>
+      </main>
+      <Drawer
+        className={classes.drawer}
+        variant='permanent'
+        classes={{
+          paper: classes.drawerPaper
+        }}
+        anchor='right'>
+        <div className={classes.toolbar} />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <h1>Messages</h1>
+            <form noValidate autoComplete='off'>
+              <TextField id='username' label='Username' variant='outlined' onChange={onUserChange} value={currentUser} />
+              <TextField id='message' label='Message' variant='outlined' onChange={onMessageChange} value={currentMessage} />
+              <Button variant='contained' color='primary' onClick={createMessage}>
+                Send
+              </Button>
+            </form>
+          </Grid>
+          <Grid item xs={12}>
             <List className={classes.messageList}>
               {messages.map(message => {
                 return (
@@ -186,32 +173,6 @@ function App() {
             </List>
           </Grid>
         </Grid>
-      </main>
-      <Drawer
-        className={classes.drawer}
-        variant='permanent'
-        classes={{
-          paper: classes.drawerPaper
-        }}
-        anchor='right'>
-        <div className={classes.toolbar} />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text + '2'}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text + '2'}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
       </Drawer>
     </div>
   );

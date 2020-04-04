@@ -163,46 +163,51 @@ const VideoCall = ({ videoProfile, channel, transcode, attendeeMode, baseMode, a
     streamList.map((item, index) => {
       if (item.getId() === uid) {
         item.close();
-        const newStreamList = [...streamList].splice(index, 1);
-        console.log('1 ################################# SET NEW STREAM LIST', newStreamList);
-        setStreamList(newStreamList);
-        const newStreamListIds = [...streamListIds].splice(index, 1);
-        setStreamListIds(newStreamListIds);
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('1 ################################# SET NEW STREAM LIST');
+        setStreamList(previousStreamList => [...previousStreamList].splice(index, 1));
+        setStreamListIds(previousStreamListIds => [...previousStreamListIds].splice(index, 1));
       }
     });
   };
 
-  const addStream = (stream, push = false) => {
-    console.log('##########################################');
-    console.log('##########################################');
-    console.log('##########################################');
-    console.log('##########################################');
-
-    console.log('addStream function', stream);
-    let repeatition = streamList.some(item => {
-      return item.getId() === stream.getId();
-    });
-    if (repeatition) {
-      return;
-    }
-    if (push) {
-      const newStreamList = [...streamList].concat([stream]);
-      console.log('2 ################################# SET NEW STREAM LIST', newStreamList);
-      setStreamList(newStreamList);
-      const newStreamListIds = [...streamListIds].concat([stream.getId()]);
-      setStreamListIds(newStreamListIds);
-    } else {
-      const newStreamList = [stream].concat([...streamList]);
+  const addStream = React.useCallback(
+    (stream, push = false) => {
+      console.log('##########################################');
       console.log('##########################################');
       console.log('##########################################');
       console.log('##########################################');
 
-      console.log('3 ################################# SET NEW STREAM LIST', newStreamList);
-      setStreamList(newStreamList);
-      const newStreamListIds = [stream.getId()].concat([...streamListIds]);
-      setStreamListIds(newStreamListIds);
-    }
-  };
+      console.log('addStream function', stream);
+      let repeatition = streamList.some(item => {
+        return item.getId() === stream.getId();
+      });
+      if (repeatition) {
+        return;
+      }
+      if (push) {
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('##########################################');
+
+        console.log('2 ################################# SET NEW STREAM LIST');
+        setStreamList(previousStreamList => [...previousStreamList].concat([stream]));
+        setStreamListIds(previousStreamListIds => [...previousStreamListIds].concat([stream.getId()]));
+      } else {
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('##########################################');
+
+        console.log('3 ################################# SET NEW STREAM LIST');
+        setStreamList(previousStreamList => [stream].concat([...previousStreamList]));
+        setStreamListIds(previousStreamListIds => [stream.getId()].concat([...previousStreamListIds]));
+      }
+    },
+    [setStreamList, setStreamListIds, streamList]
+  );
 
   const handleCamera = e => {
     localStream.current.isVideoOn() ? localStream.current.disableVideo() : localStream.current.enableVideo();
@@ -238,6 +243,15 @@ const VideoCall = ({ videoProfile, channel, transcode, attendeeMode, baseMode, a
 
   const exitBtn = <CancelPresentationSharpIcon onClick={handleExit} disabled={!readyState} />;
 
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('RERENDER');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
   return (
     <>
       <h1>Video Call</h1>
