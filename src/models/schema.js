@@ -30,6 +30,13 @@ export const schema = {
                     "type": "String",
                     "isRequired": false,
                     "attributes": []
+                },
+                "localCreatedAt": {
+                    "name": "localCreatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 }
             },
             "syncable": true,
@@ -44,5 +51,5 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "version": "9911ec87a522743c4490b0beed1cdc51"
+    "version": "043aa00823a6c3fba8b9f76e76496d9e"
 };

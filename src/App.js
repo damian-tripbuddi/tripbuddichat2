@@ -1,29 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useReducer } from 'react';
 import { DataStore } from '@aws-amplify/datastore';
 import { Message } from './models';
-import Box from '@material-ui/core/Box';
-import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 
-import TextField from '@material-ui/core/TextField';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
+//import VideoPreCall from './components/VideoPreCall';
 
-import VideoPreCall from './components/VideoPreCall';
+import ChatSection from './components/ChatSection';
 
 const drawerWidth = 300;
 
@@ -65,9 +53,12 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const classes = useStyles();
 
-  const [currentMessage, setCurrentMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [currentUser, setCurrentUser] = useState('user');
+
+  const sendMessage = async message => {
+    if (!message) return;
+    await DataStore.save(new Message({ message, user: 'test', localCreatedAt: new Date().toISOString() }));
+  };
 
   useEffect(() => {
     console.log('useEffect');
@@ -80,32 +71,18 @@ function App() {
     };
   }, []);
 
-  const onMessageChange = e => {
-    setCurrentMessage(e.target.value);
-  };
-
-  const onUserChange = e => {
-    setCurrentUser(e.target.value);
-  };
-
   const fetchMessages = async () => {
     const newMessages = await DataStore.query(Message);
     const sortedMessages = [...newMessages].sort((messageA, messageB) => {
-      if (new Date(messageA.createdAt) > new Date(messageB.createdAt)) {
-        return -1;
-      } else {
+      const messageADate = messageA.createdAt || messageA.localCreatedAt;
+      const messageBDate = messageB.createdAt || messageB.localCreatedAt;
+      if (new Date(messageADate) > new Date(messageBDate)) {
         return 1;
+      } else {
+        return -1;
       }
     });
-    console.log({ newMessages, sortedMessages });
     setMessages(sortedMessages);
-  };
-
-  const createMessage = async e => {
-    if (e) e.preventDefault();
-    if (!currentMessage) return;
-    await DataStore.save(new Message({ message: currentMessage, user: currentUser }));
-    setCurrentMessage('');
   };
 
   return (
@@ -122,7 +99,7 @@ function App() {
         <div className={classes.toolbar} />
         <Grid container spacing={3}>
           <Grid item xs={8}>
-            <VideoPreCall />
+            {/* <VideoPreCall /> */}
           </Grid>
         </Grid>
       </main>
@@ -133,46 +110,7 @@ function App() {
           paper: classes.drawerPaper
         }}
         anchor='right'>
-        <div className={classes.toolbar} />
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <h1>Messages</h1>
-            <form noValidate autoComplete='off'>
-              <TextField id='username' label='Username' variant='outlined' onChange={onUserChange} value={currentUser} />
-              <TextField id='message' label='Message' variant='outlined' onChange={onMessageChange} value={currentMessage} />
-              <Button variant='contained' color='primary' onClick={createMessage}>
-                Send
-              </Button>
-            </form>
-          </Grid>
-          <Grid item xs={12}>
-            <List className={classes.messageList}>
-              {messages.map(message => {
-                return (
-                  <React.Fragment key={message.id}>
-                    <ListItem alignItems='flex-start'>
-                      <ListItemAvatar>
-                        <Avatar alt='Remy Sharp' src='https://picsum.photos/100' />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={message.message}
-                        secondary={
-                          <React.Fragment>
-                            <Typography component='span' variant='body2' className={classes.inline} color='textPrimary'>
-                              {message.user} @
-                            </Typography>
-                            {new Date(message.createdAt).toString()}
-                          </React.Fragment>
-                        }
-                      />
-                    </ListItem>
-                    <Divider variant='inset' component='li' />
-                  </React.Fragment>
-                );
-              })}
-            </List>
-          </Grid>
-        </Grid>
+        <ChatSection messages={messages} fetchMessages={fetchMessages} sendMessage={sendMessage} />
       </Drawer>
     </div>
   );

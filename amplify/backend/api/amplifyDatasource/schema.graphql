@@ -3,4 +3,5 @@ type Message @model {
   message: String!
   user: String!
   createdAt: String
+  localCreatedAt: String
 }
